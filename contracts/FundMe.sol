@@ -33,7 +33,7 @@ contract FundMe {
         // 18 digit number to be compared with donated amount 
         uint256 minimumUSD = 50 * 10 ** 18;
         //is the donated amount less than 50USD?
-        require(getConversionRate(msg.value) >= minimumUSD, "You need to spend more ETH!");
+        require(getConversionRate(msg.value) >= minimumUSD, "ETH! amount is not enough");
         //if not, add to mapping and funders array
         addressToAmountFunded[msg.sender] += msg.value;
         funders.push(msg.sender);
@@ -53,11 +53,20 @@ contract FundMe {
     }
     
     // 1000000000
-    function getConversionRate(uint256 ethAmount) public view returns (uint256){
+    function getConversionRate(uint256 ethAmount) public view returns (uint256)
+    {
         uint256 ethPrice = getPrice();
         uint256 ethAmountInUsd = (ethPrice * ethAmount) / 1000000000000000000;
         // the actual ETH/USD conversation rate, after adjusting the extra 0s.
         return ethAmountInUsd;
+    }
+
+    function getEntryFee() public view returns (uint256)
+    {
+        uint256 minimumUSD = 50 * 10**18;
+        uint256 price = getPrice();
+        uint256 precision = 10**18;
+        return (minimumUSD * precision) / price * 10000000000;
     }
     
     //modifier: https://medium.com/coinmonks/solidity-tutorial-all-about-modifiers-a86cf81c14cb
